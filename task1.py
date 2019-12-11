@@ -3,7 +3,6 @@ from pyspark.sql.functions import *
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 import datetime
-from pyspark.sql import functions as F
 from pyspark.sql import types
 import json
 sc = SparkContext()
@@ -215,6 +214,8 @@ for fname in f_name_list:
                   x = x.split(',')
               if ' ' in x:
                   x = x.split(' ')
+              if '/' in x:
+                  x = x.split('/')
               temp = []
               for xs in x:
                   if 'th' in xs:
@@ -294,11 +295,12 @@ for fname in f_name_list:
                       k = k[0:len(k) - 1]
 
       dataset_info = {"dataset_name": dataset_name[0],
-                      "columns": column_infos}  # ,"key_column_candidates":candidate_keys}
+                      "columns": column_infos,"key_column_candidates":candidate_keys}
 
-      json_name = 'jsonfile/' + str(fname) + '.json'
-      with open(json_name, 'w') as f:
-          json.dump(dataset_info, f)
+      f1 = open('task1.json','a')
+      d = json.dumps(dataset_info)
+      f1.write(d+'\n')
+      f1.close()
 
       information = [datetime.datetime.now(), str(fname)]
       with open('open_dataset.csv', 'a') as fd:
@@ -306,9 +308,10 @@ for fname in f_name_list:
           w.writerow(information)
   except:
       dataset_info = {"dataset_name": dataset_name[0], "columns": header}
-      json_name = 'jsonfile/' + str(fname) + '.json'
-      with open(json_name, 'w') as f:
-          json.dump(dataset_info, f)
+      f1 = open('task1.json','a')
+      d = json.dumps(dataset_info)
+      f1.write(d+'\n')
+      f1.close()
 
       information = [datetime.datetime.now(), str(fname)]
       with open('open_dataset.csv', 'a') as fd:
